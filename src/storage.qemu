@@ -1,0 +1,78 @@
+/* storage_mock.c - KNoT Thing Storage MOCK handler */
+
+/*
+ * Copyright (c) 2019, CESAR. All rights reserved.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/*
+ * This file works as a mock-up for the storage on NVM. It is intended to be
+ * used for testing only.
+ * To use with the nRF52840 board, use the storage.nrf52840 file.
+ */
+
+
+/* Lens */
+static struct storage_app_settings app_settings;/* Storage helper struct */
+
+int8_t storage_init(void)
+{
+	LOG_DBG("Initializing mock storage");
+
+#if 1
+	/* New device testing */
+	memset(&app_settings, 0, sizeof(struct storage_app_settings));
+#else
+	/* Set known credentials */
+	app_settings.device_id = 0xDEADBEEFFEEDBABE;
+	strcpy(app_settings.uuid, "0354ec44-826e-4269-8855-a666b1e40000");
+	strcpy(app_settings.token, "924c222bc1f2e7d8648b43fd8fada6b4152fa905");
+#endif
+
+	return 0;
+}
+
+int8_t storage_reset(void)
+{
+	LOG_DBG("Reseting mock storage");
+
+	memset(&app_settings, 0, sizeof(struct storage_app_settings));
+
+	return 0;
+}
+
+int8_t storage_get(enum storage_key key, u8_t *value)
+{
+	switch (key) {
+	case STORAGE_APP_SETTINGS_KEY:
+		if (!strlen(app_settings.uuid) || !strlen(app_settings.token))
+			goto err;
+
+		memcpy(value, &app_settings,
+		       sizeof(struct storage_app_settings));
+		break;
+	default:
+		goto err;
+	}
+
+	return 0;
+
+err:
+	return -ENOENT;
+}
+
+int8_t storage_set(enum storage_key key, const u8_t *value)
+{
+
+	switch (key) {
+	case STORAGE_APP_SETTINGS_KEY:
+		memcpy(&app_settings, value,
+		       sizeof(struct storage_app_settings));
+		break;
+	default:
+		return -1;
+	}
+
+	return 0;
+}
