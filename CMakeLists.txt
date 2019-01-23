@@ -50,6 +50,7 @@ ExternalProject_Add(proto
     BINARY_DIR ${PROTO_ROOT}/src/proto
     SOURCE_DIR ${PROTO_ROOT}/src/proto
     GIT_REPOSITORY https://github.com/CESARBR/knot-protocol-source.git
+    BUILD_BYPRODUCTS ${PROTO_LIB_DIR}/lib${PROTO_LIB}.a
     CONFIGURE_COMMAND ./bootstrap && ./configure ${configure_flags}
 
     COMMENT "bootstrapping..." # Text printed when step executes
